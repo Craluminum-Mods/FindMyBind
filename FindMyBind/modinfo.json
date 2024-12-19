@@ -1,0 +1,12 @@
+{
+  "type": "code",
+  "side": "client",
+  "modid": "findmybind",
+  "name": "Find My Bind",
+  "authors": [ "Craluminum2413" ],
+  "description": "Adds a search bar to the controls menu to find keybinds more easily",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "1.20.0-rc.1"
+  }
+}
