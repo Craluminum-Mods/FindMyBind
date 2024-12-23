@@ -82,7 +82,7 @@ public static class LoadKeyCombinationsPatch
                 {
                     foreach (ConfigItem item in sortedItems[j])
                     {
-                        string key = item.Key.ToSearchFriendly().ToLowerInvariant();
+                        string key = AddSearchFieldToControlsTab.filterByKey ? item.Value.ToSearchFriendly().ToLowerInvariant() : item.Key.ToSearchFriendly().ToLowerInvariant();
                         if (key.Contains(searchText))
                         {
                             _filteredSortedItems = _filteredSortedItems.AddItem(item);

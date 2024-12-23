@@ -10,6 +10,7 @@ namespace FindMyBind;
 public static class AddSearchFieldToControlsTab
 {
     public static string currentSearchText;
+    public static bool filterByKey;
 
     [HarmonyPrefix]
     public static bool Prefix(GuiCompositeSettings __instance, IGameSettingsHandler ___handler, ref GuiComposer ___composer, ref bool ___mousecontrolsTabActive)
@@ -22,12 +23,13 @@ public static class AddSearchFieldToControlsTab
         ElementBounds scrollbarBounds = ElementStdBounds.VerticalScrollbar(insetBounds);
         ElementBounds leftText = ElementBounds.Fixed(0.0, 41.0, 360.0, 42.0);
         ElementBounds rightSlider;
-        
+
         ___composer = GuiComposerHelpers.AddSwitch(bounds: rightSlider = ElementBounds.Fixed(490.0, 38.0, 200.0, 20.0).BelowCopy(0.0, 32.0), composer: __instance.CallMethod<GuiComposer>("ComposerHeader", "gamesettings-controls", "controls").AddStaticText(Lang.Get("setting-name-noseparatectrlkeys"), CairoFont.WhiteSmallishText(), leftText = leftText.BelowCopy(0.0, 10.0, 120.0)), onToggle: (on) => onSeparateCtrl(__instance, on), key: "separateCtrl");
         ___composer.AddHoverText(Lang.Get("setting-hover-noseparatectrlkeys"), CairoFont.WhiteSmallText(), 250, leftText.FlatCopy().WithFixedHeight(25.0));
         ___composer.AddStaticText(Lang.Get("keycontrols"), CairoFont.WhiteSmallishText(), leftText = leftText.BelowCopy(0.0, 5.0, -120.0));
 
-        ___composer.AddTextInput(leftText = leftText.BelowCopy(0.0, 5.0), (text) => FilterItemsBySearchText(__instance, ___handler, text), key: "searchField");
+        ___composer.AddTextInput(leftText = leftText.BelowCopy(0.0, 5.0), (text) => FilterItemsBySearchText(__instance, text), key: "searchField");
+        ___composer.AddToggleButton(Lang.Get("keycontrols-filter-by-key"), CairoFont.WhiteSmallText(), (on) => FilterItemsByKey(__instance, on), leftText.RightCopy(fixedDeltaX: 10.0), key: "searchField-filter");
 
         ___composer.AddVerticalScrollbar((value) => OnNewScrollbarValue(__instance, value), scrollbarBounds.FixedUnder(leftText, 10.0), "scrollbar");
         ___composer.AddInset(insetBounds.FixedUnder(leftText, 10.0), 3, 0.8f);
@@ -52,16 +54,25 @@ public static class AddSearchFieldToControlsTab
 
         ___composer.GetTextInput("searchField").SetPlaceHolderText(Lang.Get("Search..."));
         ___composer.GetTextInput("searchField").SetValue("");
+        filterByKey = false;
         return false;
     }
 
-    static void FilterItemsBySearchText(GuiCompositeSettings instance, IGameSettingsHandler handler, string text)
+    static void FilterItemsByKey(GuiCompositeSettings instance, bool on)
     {
-        if (!(currentSearchText == text))
+        filterByKey = on;
+        FilterItemsBySearchText(instance, currentSearchText, true);
+    }
+
+    static void FilterItemsBySearchText(GuiCompositeSettings instance, string text, bool forceUpdate = false)
+    {
+        if (currentSearchText == text && forceUpdate == false)
         {
-            currentSearchText = text;
-            instance.CallMethod("ReLoadKeyCombinations");
+            return;
         }
+
+        currentSearchText = text;
+        instance.CallMethod("ReLoadKeyCombinations");
     }
 
     static void OnNewScrollbarValue(GuiCompositeSettings instance, float value) => instance.CallMethod("OnNewScrollbarValue", value);

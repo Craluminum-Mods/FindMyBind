@@ -5,7 +5,7 @@
   "name": "Find My Bind",
   "authors": [ "Craluminum2413" ],
   "description": "Adds a search bar to the controls menu to find keybinds more easily",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "game": "1.20.0-rc.1"
   }
